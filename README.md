@@ -10,9 +10,25 @@
 curl -fsSL https://raw.githubusercontent.com/yeopjoonhyun/claude-auto-model/main/install.sh | bash
 ```
 
-`~/.claude/mods/auto-model`에 모드를 쓰고 `~/.claude/settings.json`의
-`env.CLAUDE_CODE_PLUGIN_DIRS`에 등록합니다. 새 세션부터 적용됩니다.
 `python3`가 필요합니다.
+
+## 설치 (Windows)
+
+PowerShell에서:
+
+```powershell
+irm https://raw.githubusercontent.com/yeopjoonhyun/claude-auto-model/main/install.ps1 | iex
+```
+
+Windows PowerShell 5.1과 PowerShell 7 모두 됩니다. 기존 `settings.json`은
+`settings.json.bak`으로 남깁니다.
+
+## 설치하면
+
+`~/.claude/mods/auto-model`(Windows는 `%USERPROFILE%\.claude\mods\auto-model`)에
+`mod/` 폴더의 파일을 내려받고 `~/.claude/settings.json`의
+`env.CLAUDE_CODE_PLUGIN_DIRS`에 등록합니다. 새 세션부터 적용됩니다.
+`AUTO_MODEL_REF` 환경 변수로 다른 브랜치나 태그에서 설치할 수 있습니다.
 
 ## 명령
 
@@ -23,4 +39,4 @@ curl -fsSL https://raw.githubusercontent.com/yeopjoonhyun/claude-auto-model/main
 ## 주의
 
 모델을 바꾸면 프롬프트 캐시가 새로 만들어져 첫 응답이 비쌀 수 있습니다.
-키워드는 `hooks/register.ts`의 `HARD`, `EASY` 목록에서 고칠 수 있습니다.
+키워드는 `mod/hooks/register.ts`의 `HARD`, `EASY` 목록에서 고칠 수 있습니다.
