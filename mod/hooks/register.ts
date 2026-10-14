@@ -33,7 +33,9 @@ function pick(prompt: string): 'opus' | 'sonnet' | undefined {
 
 let isEnabled = true
 let chosen: string | undefined
-let announced: string | undefined
+
+const label = (model: string) =>
+  model === OPUS ? 'Opus 5.5' : model === SONNET ? 'Sonnet 5.5' : model
 
 export const register: Register = (on) => {
   on('session.start', async ($, e, next) => {
@@ -59,23 +61,20 @@ export const register: Register = (on) => {
   on('prompt.submit', async ($, e, next) => {
     if (isEnabled && e.origin.kind === 'composer') {
       const level = pick(e.text)
-      if (level !== undefined) {
-        const model = level === 'opus' ? OPUS : SONNET
-        if (model !== announced) {
-          announced = model
-          $.ui.toast(level === 'opus' ? '자동 모델: Opus 5.5 (어려운 작업)' : '자동 모델: Sonnet 5.5 (쉬운 작업)')
-        }
-        chosen = model
-      }
+      if (level !== undefined) chosen = level === 'opus' ? OPUS : SONNET
     }
     return next(e)
   })
 
   // Apply the choice to each request the main conversation makes.
+  // Show the model actually sent, once per answer (the first request of the turn).
   on('turn.step', async function* ($, e, next) {
-    if (isEnabled && chosen !== undefined && e.agentId === undefined && e.model !== chosen) {
-      return yield* next({ ...e, model: chosen })
+    if (e.agentId !== undefined) return yield* next(e)
+    const model = isEnabled && chosen !== undefined ? chosen : e.model
+    if (e.index === 0) {
+      const note = model === e.model ? '' : ` (화면 표시: ${label(e.model)})`
+      $.ui.toast(`이번 답변 모델: ${label(model)}${note}`)
     }
-    return yield* next(e)
+    return yield* next(model === e.model ? e : { ...e, model })
   })
 }
